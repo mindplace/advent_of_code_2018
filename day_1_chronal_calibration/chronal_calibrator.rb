@@ -1,5 +1,5 @@
 class ChronalCalibrator
-  attr_reader :values, :frequency_changes, :total_resulting_frequency, :nth_recurring, :frequency_occurance_graph
+  attr_reader :values, :frequency_changes, :total_resulting_frequency, :nth_recurring
 
   def initialize(values:)
     @values = values
@@ -34,7 +34,6 @@ class ChronalCalibrator
       frequency_graph[value] += 1
       if frequency_graph[value] == n
         @nth_recurring = value
-        @frequency_occurance_graph = frequency_graph
         return value
       end
     end
