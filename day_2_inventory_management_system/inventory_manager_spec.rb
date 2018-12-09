@@ -4,6 +4,7 @@ require_relative 'inventory_manager.rb'
 
 RSpec.describe InventoryManager do
   subject { InventoryManager.new(words: words) }
+  let(:file_words) { File.readlines('ids_inputs.txt').map { |line| line.chomp } }
 
   describe '#generate_checksum' do
     context "when words are ['abcdef', 'bababc', 'abbcde', 'abcccd', 'aabcdd', 'abcdee', 'ababab']" do
@@ -15,7 +16,7 @@ RSpec.describe InventoryManager do
     end
 
     context 'when words are inputs from file' do
-      let(:words) { File.readlines('ids_inputs.txt').map { |line| line.chomp } }
+      let(:words) { file_words }
 
       it 'returns 7872' do
         expect(subject.generate_checksum).to eq 7872
@@ -23,9 +24,28 @@ RSpec.describe InventoryManager do
     end
   end
 
-  describe '#find_similar_words' do
-    before { subject.generate_checksum }
+  describe '#levenshtein_distance' do
+    let(:first) { words.first }
+    let(:second) { words.last }
 
+    context "when words are 'abcde' and 'fghij'" do
+      let(:words) { [ 'abcde', 'fghij' ] }
+
+      it 'returns 5' do
+        expect(subject.levenshtein_distance(first: first, second: second)).to eq 5
+      end
+    end
+
+    context "when words are 'mjxmoewpwkyaihvrndgfkubszc' and 'djxmoewpkkyaihvrnmgflubszc'" do
+      let(:words) { ["mjxmoewpwkyaihvrndgfkubszc", "djxmoewpkkyaihvrnmgflubszc"] }
+
+      it 'returns 4' do
+        expect(subject.levenshtein_distance(first: first, second: second)).to eq 4
+      end
+    end
+  end
+
+  describe '#find_similar_words' do
     context "when words are ['abcde', 'fghij', 'klmno', 'pqrst', 'fguij', 'axcye', 'wvxyz']" do
       let(:words) { ['abcde', 'fghij', 'klmno', 'pqrst', 'fguij', 'axcye', 'wvxyz'] }
 
@@ -33,24 +53,12 @@ RSpec.describe InventoryManager do
         expect(subject.find_similar_words).to eq 'fgij'
       end
     end
-  end
 
-  describe '#levenshtein_distance' do
-    context 'when given bad inputs' do
-      let(:words) { [ 0, 0] }
+    context "when words are from the text file" do
+      let(:words) { file_words }
 
-      it 'raises an ArgumentError' do
-        expect { subject.levenshtein_distance(first: 0, second: 0) }.to raise_error(ArgumentError)
-      end
-    end
-
-    context "when words are 'abcde' and 'fghij'" do
-      let(:words) { [ 'abcde', 'fghij' ] }
-      let(:first) { words.first }
-      let(:second) { words.last }
-
-      it 'returns 5' do
-        expect(subject.levenshtein_distance(first: first, second: second)).to eq 5
+      it 'returns something' do
+        expect(subject.find_similar_words).to eq 'tjxmoewpdkyaihvrndfluwbzc'
       end
     end
   end

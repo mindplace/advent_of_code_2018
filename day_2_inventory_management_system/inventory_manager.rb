@@ -15,29 +15,18 @@ class InventoryManager
 
   def find_similar_words
     @words_difference_groupings = generate_words_differences
+    most_similar_set = words_difference_groupings.min_by { |set| set[:distance] }
+    keep_same_letters(words: most_similar_set[:set])
   end
 
   def levenshtein_distance(first:, second:)
-    unless [first, second].all? { |word| word.is_a?(String) || word.is_a?(Hash) }
-      raise ArgumentError.new('Must be a string or a hash of letters to letter counts')
+    difference_counter = 0
+
+    first.chars.each_with_index do |letter, i|
+      difference_counter += 1 if second[i] != letter
     end
-    
-    first = count_letters(word: first) if first.is_a?(String)
-    second = count_letters(word: second) if second.is_a?(String)
 
-    # function levenshtein(a, b) {
-    #   var t = [], u, i, j, m = a.length, n = b.length;
-    #   if (!m) { return n; }
-    #   if (!n) { return m; }
-    #   for (j = 0; j <= n; j++) { t[j] = j; }
-    #   for (i = 1; i <= m; i++) {
-    #     for (u = [i], j = 1; j <= n; j++) {
-    #       u[j] = a[i - 1] === b[j - 1] ? t[j - 1] : Math.min(t[j - 1], t[j], u[j - 1]) + 1;
-    #     } t = u;
-    #   } return u[n];
-    # }
-
-    binding.pry
+    difference_counter
   end
 
   private
@@ -80,9 +69,11 @@ class InventoryManager
 
   def generate_words_differences
     words.combination(2).to_a.map do |set|
-      letters_groups = set.map { |word| lettercounted_words[word][:letters] }
-      differences = []
-      { set: set, distance: levenshtein_distance(first: letters_groups.first, second: letters_groups.last) }
+      { set: set, distance: levenshtein_distance(first: set.first, second: set.last) }
     end
+  end
+
+  def keep_same_letters(words:)
+    words.first.chars.select { |char| words.last[char] }.join('')
   end
 end
