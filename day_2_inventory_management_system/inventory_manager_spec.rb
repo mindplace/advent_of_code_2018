@@ -22,4 +22,16 @@ RSpec.describe InventoryManager do
       end
     end
   end
+
+  describe '#find_similar_ids' do
+    before { subject.generate_checksum }
+
+    context "when ids are ['abcde', 'fghij', 'klmno', 'pqrst', 'fguij', 'axcye', 'wvxyz']" do
+      let(:ids) { ['abcde', 'fghij', 'klmno', 'pqrst', 'fguij', 'axcye', 'wvxyz'] }
+
+      it "returns 'fgij'" do
+        expect(subject.find_similar_ids).to eq 'fgij'
+      end
+    end
+  end
 end
