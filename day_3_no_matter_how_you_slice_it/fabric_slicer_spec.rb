@@ -9,7 +9,7 @@ RSpec.describe FabricSlicer do
   describe '#translate_inputs_to_sub_rectangles' do
     context 'when given a single value' do
       let(:inputs) { ["#1 @ 3,2: 5x4"] }
-      let(:expected_result) { [ { min_x: 3, min_y: 2, max_x: 7, max_y: 5, id: '123' } ] }
+      let(:expected_result) { [ { min_x: 3, min_y: 2, max_x: 7, max_y: 5, id: '1' } ] }
       let(:cloth_size) { 8 }
 
       it 'turns the value into rectangle description' do
@@ -41,12 +41,12 @@ RSpec.describe FabricSlicer do
       let(:expected_result) {
         [
           "........",
-          "...SSSS.",
-          "...SSSS.",
-          ".SSooSS.",
-          ".SSooSS.",
-          ".SSSSSS.",
-          ".SSSSSS.",
+          "...2222.",
+          "...2222.",
+          ".11oo22.",
+          ".11oo22.",
+          ".111133.",
+          ".111133.",
           "........"
         ]
       }

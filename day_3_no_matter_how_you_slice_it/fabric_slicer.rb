@@ -31,18 +31,9 @@ class FabricSlicer
   end
 
   def find_non_overlap_id
-    overlap_id = ''
-    cloth.each do |row|
-      row.each do |col|
-        next if col.nil?
-        if col == 'o'
-          overlap_id = nil
-        else
-          overlap_id = col
-          found = check_cloth_for_rectangle(id: overlap_id)
-          return overlap_id if found
-        end
-      end
+    sub_rectangles.each do |rectangle|
+      found = check_cloth_for_rectangle(rectangle: rectangle)
+      return rectangle[:id] if found
     end
     false
   end
@@ -71,15 +62,13 @@ class FabricSlicer
     end
   end
 
-  def check_cloth_for_rectangle(id:)
-    rectangle_set = sub_rectangles.find { |rect| rect[:id] == id }
-
-    (rectangle_set[:min_y] .. rectangle_set[:max_y]).each do |y_coord|
-      (rectangle_set[:min_x] .. rectangle_set[:max_x]).each do |x_coord|
-        return false if cloth[y_coord][x_coord] != rectangle_set[:id]
+  def check_cloth_for_rectangle(rectangle:)
+    id = rectangle[:id]
+    (rectangle[:min_y] .. rectangle[:max_y]).each do |y_coord|
+      (rectangle[:min_x] .. rectangle[:max_x]).each do |x_coord|
+        return false if cloth[y_coord][x_coord] != rectangle[:id]
       end
     end
-
     true
   end
 end
