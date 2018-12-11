@@ -17,9 +17,9 @@ RSpec.describe Guard do
     ]
   }
 
-  describe '#build_sleep_reports' do
-    it 'builds a sleep report' do
-      expect(subject.build_sleep_reports['1518-11-01'][:report]).to eq '.....####################.....#########################.....'
+  describe '#initialize' do
+    it 'builds a sleep report on initialize' do
+      expect(subject.sleep_report['1518-11-01'][:report]).to eq '.....####################.....#########################.....'
     end
   end
 

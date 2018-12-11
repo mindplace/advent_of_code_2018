@@ -27,27 +27,26 @@ RSpec.describe ReposeRecorder do
     ]
   }
 
-  describe '#instantiate_guards' do
+  describe '#instantiate' do
     context 'when given records for two guards' do
       let(:sleep_records) { sample_records }
 
       it 'instantiates guards with times' do
-        expect { subject.instantiate_guards }.to change { subject.guards.length }.from(0).to(2)
+        expect(subject.guards.length).to eq 2
       end
 
       it 'preserves all the records' do
-        subject.instantiate_guards
         expect(subject.guards.map(&:sleep_records).flatten.sort).to eq sleep_records.sort
       end
     end
   end
 
-  describe '#find_overlapping_sleep_times' do
+  describe '#longest_sleep_time_x_guard_id' do
     context 'when given sample records' do
       let(:sleep_records) { sample_records }
 
       it 'returns the guard ID times highest overlapping sleep minute' do
-        expect(subject.find_overlapping_sleep_times).to eq 240
+        expect(subject.longest_sleep_time_x_guard_id).to eq 240
       end
     end
 
@@ -55,7 +54,25 @@ RSpec.describe ReposeRecorder do
       let(:sleep_records) { File.readlines('repose_inputs.txt').map(&:chomp) }
 
       it 'returns the guard ID times highest overlapping sleep minute' do
-        expect(subject.find_overlapping_sleep_times).to eq 99911
+        expect(subject.longest_sleep_time_x_guard_id).to eq 99911
+      end
+    end
+  end
+
+  describe '#highest_sleep_frequency_count_x_guard_id' do
+    context 'when given sample records' do
+      let(:sleep_records) { sample_records }
+
+      it 'returns the guard ID times highest sleep frequency count' do
+        expect(subject.highest_sleep_frequency_count_x_guard_id).to eq 4455
+      end
+    end
+
+    context 'when given full text input' do
+      let(:sleep_records) { File.readlines('repose_inputs.txt').map(&:chomp) }
+
+      it 'returns the guard ID times highest sleep frequency count' do
+        expect(subject.highest_sleep_frequency_count_x_guard_id).to eq 65854
       end
     end
   end
