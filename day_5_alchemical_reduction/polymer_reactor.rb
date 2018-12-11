@@ -5,6 +5,25 @@ class PolymerReactor
     @polymer = polymer
   end
 
+  def self.select_best_removed_unit_type(polymer:)
+    polymer_variations = polymer.downcase.chars.uniq.map do |char|
+      polymer_missing_char = polymer.chars.select { |el| el.upcase != char.upcase }
+      polymer_obj = self.new(polymer: polymer_missing_char)
+      polymer_obj.react_polymer
+
+      [
+        char,
+        {
+          polymer: polymer_obj,
+          reacted_polymer: polymer_obj.reacted_polymer,
+          length: polymer_obj.length_counter
+        }
+      ]
+    end.to_h
+
+    polymer_variations.sort_by { |k, v| v[:length] }.first[1][:length]
+  end
+
   def react_polymer
     @reacted_polymer = polymer.dup
     i = 0

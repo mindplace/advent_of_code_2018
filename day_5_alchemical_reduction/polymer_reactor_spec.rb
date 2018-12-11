@@ -4,7 +4,26 @@ require_relative 'polymer_reactor.rb'
 
 RSpec.describe PolymerReactor do
   subject { PolymerReactor.new(polymer: polymer) }
+  let(:class_subject) { described_class.select_best_removed_unit_type(polymer: polymer) }
   let(:file_polymer) { File.read('polymer_input.txt').gsub('\n', '').chomp }
+
+  describe '.select_best_removed_unit_type' do
+    context "when polymer is 'dabAcCaCBAcCcaDA'" do
+      let(:polymer) { 'dabAcCaCBAcCcaDA' }
+
+      it 'returns 4' do
+        expect(class_subject).to eq 4
+      end
+    end
+
+    context "when polymer is file input" do
+      let(:polymer) { file_polymer }
+
+      it 'returns 6484' do
+        expect(class_subject).to eq 6484
+      end
+    end
+  end
 
   describe '#react_polymer' do
     context "when polymer is 'aA'" do
