@@ -3,10 +3,13 @@ require 'pry'
 require_relative 'point'
 
 RSpec.describe Point do
-  let(:subject) { described_class.new(start_coord: start_coord, name: name, board_size: 20) }
+  let(:subject) { described_class.new(start_coord: start_coord, name: name, board_x_max: board_x_max, board_y_max: board_y_max) }
   let(:name) { "A" }
 
   describe '#emit_new_coords' do
+    let(:board_x_max) { 20 }
+    let(:board_y_max) { 20 }
+
     context 'when current outwards steps is 1' do
       before { subject.outward_steps = 1 }
 
@@ -60,6 +63,21 @@ RSpec.describe Point do
 
         it 'returns new coords' do
           expect(subject.emit_new_coords.sort).to eq expected_result.sort
+        end
+      end
+    end
+
+    context 'when outwards steps is 80' do
+      let(:board_x_max) { 360 }
+      let(:board_y_max) { 360 }
+      before { subject.outward_steps = 80 }
+
+      context 'and initial coords are [2, 2]' do
+        let(:start_coord) { [2, 2] }
+        let(:expected_result) { [[0, 80], [1, 81], [2, 82], [3, 81], [4, 80], [5, 79], [6, 78], [7, 77], [8, 76], [9, 75], [10, 74]] }
+
+        it 'returns new coords' do
+          expect(subject.emit_new_coords.sort).to include(*expected_result)
         end
       end
     end

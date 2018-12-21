@@ -1,11 +1,12 @@
 class Point
-  attr_reader :start_coord, :start_x, :start_y, :name, :board_size
+  attr_reader :start_coord, :start_x, :start_y, :name, :board_x_max, :board_y_max
   attr_accessor :outward_steps
 
-  def initialize(start_coord:, name:, board_size:)
+  def initialize(start_coord:, name:, board_x_max:, board_y_max:)
     @start_coord = start_coord
     @name = name
-    @board_size = board_size - 1
+    @board_x_max = board_x_max
+    @board_y_max = board_y_max
     @start_x = start_coord[0]
     @start_y = start_coord[1]
     @outward_steps = 0
@@ -20,12 +21,12 @@ class Point
   private
 
   def select_coords_from_set(coord_set:)
-    coord_set.select { |x, y| x >= 0 && x <= board_size && y >= 0 && y<= board_size }.uniq
+    coord_set.select { |x, y| x >= 0 && x < board_x_max && y >= 0 && y < board_y_max }.uniq
   end
 
   def build_coord_spiral
     initial_set = build_cross
-    return starting_coords if initial_set.any? { |set| set == start_coord }
+    return initial_set if initial_set.any? { |set| set == start_coord }
 
     all_coords = []
 
