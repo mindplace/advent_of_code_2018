@@ -1,45 +1,71 @@
 class Point
-  attr_reader :start_coord, :start_x, :start_y, :name
+  attr_reader :start_coord, :start_x, :start_y, :name, :board_size
   attr_accessor :outward_steps
 
-  def initialize(start_coord:, name:)
+  def initialize(start_coord:, name:, board_size:)
     @start_coord = start_coord
     @name = name
+    @board_size = board_size - 1
     @start_x = start_coord[0]
     @start_y = start_coord[1]
     @outward_steps = 0
   end
 
   def emit_new_coords
-    inner_steps = outward_steps
+    coords = select_coords_from_set(coord_set: build_coord_spiral)
     @outward_steps += 1
-
-    outward_coords = select_coords_from_set(coord_set: build_cross(steps: outward_steps))
-    inner_coords = select_coords_from_set(coord_set: build_square(steps: inner_steps))
-
-    outward_coords + inner_coords
+    coords
   end
 
   private
 
   def select_coords_from_set(coord_set:)
-    coord_set.select { |x, y| x >= 0 && x <= 360 && y >= 0 && y<= 360 }.uniq
+    coord_set.select { |x, y| x >= 0 && x <= board_size && y >= 0 && y<= board_size }.uniq
   end
 
-  def build_square(steps:)
-    return [] if steps == 0
-    nums_for_coords = build_cross(steps: steps).flatten.sort.select.with_index { |el, i| i == 0 || i == 7 }
-    result_coords = []
-    nums_for_coords.each { |el| result_coords << [el, el]}
-    result_coords + nums_for_coords.permutation(2).to_a
+  def build_coord_spiral
+    initial_set = build_cross
+    return starting_coords if initial_set.any? { |set| set == start_coord }
+
+    all_coords = []
+
+    0.upto(3) do |i|
+      current_coords = initial_set[i]
+      comparison_coords = initial_set[i + 1] || initial_set[0]
+
+      x_counter = 0
+      y_counter = 0
+
+      all_coords << current_coords
+
+      until comparison_coords == all_coords.last
+        if i == 0
+          x_counter -= 1
+          y_counter += 1
+        elsif i == 1
+          x_counter -= 1
+          y_counter -= 1
+        elsif i == 2
+          x_counter += 1
+          y_counter -= 1
+        elsif i == 3
+          x_counter += 1
+          y_counter += 1
+        end
+
+        all_coords << [ (current_coords[0] + x_counter), (current_coords[1] + y_counter) ]
+      end
+    end
+
+    all_coords
   end
 
-  def build_cross(steps:)
+  def build_cross
     [
-      [start_x - steps, start_y],
-      [start_x + steps, start_y],
-      [start_x, start_y + steps],
-      [start_x, start_y - steps]
+      [start_x + outward_steps, start_y],
+      [start_x, start_y + outward_steps],
+      [start_x - outward_steps, start_y],
+      [start_x, start_y - outward_steps]
     ]
   end
 end
